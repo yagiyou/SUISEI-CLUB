@@ -560,6 +560,24 @@ header.is-scrolled{
       .hours-grid{grid-template-columns: repeat(2, 1fr)}
       .hero{padding: 96px 0 56px}
     }
+
+    /* 1) 全站固定的氛圍光暈：只畫一次，不要平鋪 */
+body::after{
+  content:"";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1; /* 在背景上，但在內容下（你的內容區塊 z-index 通常更高） */
+
+  background:background: #070707;
+};
+
+  background-repeat: no-repeat;
+  background-size: cover;
+  opacity: .95;
+  mix-blend-mode: screen; /* 讓金色更像光 */
+}
+
   </style>
 </head>
 
@@ -862,7 +880,6 @@ header.is-scrolled{
           </div>
 
           <div class="hero-actions" style="margin-top:22px">
-            <a class="btn primary" href="https://lin.ee/xxxx" target="_blank" rel="noopener"><span>Line 訂位</span></a>
             <a class="btn" href="tel:06-221-3677">撥打電話</a>
           </div>
         </div>
@@ -994,5 +1011,6 @@ header.is-scrolled{
 
 </body>
 </html>
+
 
 
