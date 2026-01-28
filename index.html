@@ -56,6 +56,21 @@
     }
 
     /* ---------- NAV ---------- */
+header{
+  position:fixed; left:0; right:0; top:0;
+  z-index:60;
+  background: linear-gradient(to bottom, rgba(0,0,0,.55), rgba(0,0,0,0));
+  backdrop-filter: blur(6px);
+  transition: background .25s ease, border-color .25s ease;
+  border-bottom: 1px solid transparent;
+}
+header.is-scrolled{
+  background: rgba(7,7,7,.88);
+  border-bottom-color: rgba(255,255,255,.06);
+  backdrop-filter: blur(10px);
+}
+
+    
     header{
       position:fixed; left:0; right:0; top:0;
       z-index:60;
@@ -969,6 +984,15 @@
       }
     });
   </script>
+
+  <script>
+  const header = document.querySelector("header");
+  const onScroll = () => header.classList.toggle("is-scrolled", window.scrollY > 10);
+  window.addEventListener("scroll", onScroll, { passive:true });
+  onScroll();
+</script>
+
 </body>
 </html>
+
 
