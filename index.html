@@ -1,3 +1,4 @@
+```html
 <!doctype html>
 <html lang="zh-Hant">
 <head>
@@ -26,15 +27,18 @@
       /* cursor */
       --cursor-ring: 34px;
       --cursor-dot: 6px;
+
+      /* hero image var (JS 會塞) */
+      --hero-image: none;
     }
 
     *{box-sizing:border-box}
     html,body{height:100%}
+
+    /* ✅ 乾淨底色：不要在 body 直接放光暈（避免看起來在重複） */
     body{
       margin:0;
-      background: radial-gradient(1200px 700px at 50% -10%, rgba(214,179,106,.12), transparent 55%),
-                  radial-gradient(900px 500px at 90% 20%, rgba(214,179,106,.08), transparent 60%),
-                  var(--bg);
+      background: var(--bg);
       color:var(--text);
       font-family:"Noto Sans TC", system-ui, -apple-system, "Segoe UI", sans-serif;
       overflow-x:hidden;
@@ -43,6 +47,23 @@
     a,button,input,select,textarea{cursor:none}
     a{color:inherit; text-decoration:none}
     .container{max-width:var(--max); margin:0 auto; padding:0 24px}
+
+    /* ✅ 全站固定黃金光暈：只畫一次、不平鋪 */
+    body::after{
+      content:"";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+      background:
+        radial-gradient(900px 520px at 55% 22%, rgba(214,179,106,.18), transparent 62%),
+        radial-gradient(720px 460px at 82% 30%, rgba(214,179,106,.10), transparent 60%),
+        radial-gradient(820px 520px at 20% 55%, rgba(214,179,106,.08), transparent 62%);
+      background-repeat:no-repeat;
+      background-size:auto;
+      opacity:.95;
+      mix-blend-mode: screen;
+    }
 
     /* 粒子 */
     .grain::before{
@@ -56,27 +77,20 @@
     }
 
     /* ---------- NAV ---------- */
-header{
-  position:fixed; left:0; right:0; top:0;
-  z-index:60;
-  background: linear-gradient(to bottom, rgba(0,0,0,.55), rgba(0,0,0,0));
-  backdrop-filter: blur(6px);
-  transition: background .25s ease, border-color .25s ease;
-  border-bottom: 1px solid transparent;
-}
-header.is-scrolled{
-  background: rgba(7,7,7,.88);
-  border-bottom-color: rgba(255,255,255,.06);
-  backdrop-filter: blur(10px);
-}
-
-    
     header{
       position:fixed; left:0; right:0; top:0;
       z-index:60;
-      background: linear-gradient(to bottom, rgba(0,0,0,.68), rgba(0,0,0,0));
+      background: linear-gradient(to bottom, rgba(0,0,0,.55), rgba(0,0,0,0));
       backdrop-filter: blur(6px);
+      transition: background .25s ease, border-color .25s ease;
+      border-bottom: 1px solid transparent;
     }
+    header.is-scrolled{
+      background: rgba(7,7,7,.88);
+      border-bottom-color: rgba(255,255,255,.06);
+      backdrop-filter: blur(10px);
+    }
+
     .nav{
       display:flex; align-items:center; justify-content:space-between;
       padding:18px 0;
@@ -89,6 +103,8 @@ header.is-scrolled{
       color:var(--gold);
       font-family:"Cormorant Garamond", serif;
       font-weight:700;
+      font-size:11px;
+      letter-spacing:.10em;
     }
     .brand small{display:block; font-size:12px; color:var(--muted); letter-spacing:.18em;}
     .brand strong{display:block; font-size:14px; font-weight:600;}
@@ -126,7 +142,7 @@ header.is-scrolled{
       color:#EAC100;
       font-weight:800;
     }
-    .btn.primary span{color:EAC100}
+    .btn.primary span{color:#EAC100}
 
     /* ---------- HERO ---------- */
     .hero{
@@ -136,22 +152,20 @@ header.is-scrolled{
       align-items:end;
       padding: 110px 0 70px;
       overflow:hidden;
+      z-index:4; /* 內容層在 body::after 之上 */
     }
 
-    /* 店家照：用 CSS 變數塞 */
+    /* 店家照 + 黃黑光暈（不會平鋪） */
     .hero-bg{
       position:absolute; inset:0;
       background:
-        /* 暗角 */
         radial-gradient(1000px 720px at 55% 26%, rgba(0,0,0,.10), rgba(0,0,0,.62) 56%, rgba(0,0,0,.92) 100%),
-        /* 黃金光暈（保留） */
         radial-gradient(700px 520px at 58% 26%, rgba(214,179,106,.28), rgba(214,179,106,0) 60%),
-        /* 黃黑氛圍暖光 */
         radial-gradient(520px 340px at 74% 18%, rgba(214,179,106,.20), rgba(214,179,106,0) 62%),
-        /* 你的照片 */
         var(--hero-image);
       background-size:cover;
       background-position:center;
+      background-repeat:no-repeat;
       filter:saturate(1.06) contrast(1.06);
       transform:scale(1.02);
       z-index:0;
@@ -167,7 +181,6 @@ header.is-scrolled{
 
     .hero-inner{position:relative; z-index:3}
 
-    /* 更像參考圖：上小斜體、下大字 */
     .kicker{
       font-family:"Cormorant Garamond", serif;
       color: rgba(236,234,230,.88);
@@ -373,7 +386,7 @@ header.is-scrolled{
       padding-left: 0;
     }
 
-    /* ---------- PHOTO CAROUSEL（更明顯金色圓環/微光） ---------- */
+    /* ---------- PHOTO CAROUSEL ---------- */
     .photo-wrap{padding:22px;}
     .photo-frame{
       position:relative;
@@ -501,6 +514,8 @@ header.is-scrolled{
       border-top: 1px solid rgba(255,255,255,.06);
       color: rgba(236,234,230,.55);
       font-size:12px;
+      position:relative;
+      z-index:4;
     }
     .footer-row{
       display:flex; align-items:center; justify-content:space-between;
@@ -560,24 +575,6 @@ header.is-scrolled{
       .hours-grid{grid-template-columns: repeat(2, 1fr)}
       .hero{padding: 96px 0 56px}
     }
-
-    /* 1) 全站固定的氛圍光暈：只畫一次，不要平鋪 */
-body::after{
-  content:"";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 1; /* 在背景上，但在內容下（你的內容區塊 z-index 通常更高） */
-
-  background:background: #070707;
-};
-
-  background-repeat: no-repeat;
-  background-size: cover;
-  opacity: .95;
-  mix-blend-mode: screen; /* 讓金色更像光 */
-}
-
   </style>
 </head>
 
@@ -610,7 +607,7 @@ body::after{
     </div>
   </header>
 
-  <main id="top">
+  <main id="top" style="position:relative; z-index:4;">
     <!-- HERO -->
     <section class="hero" id="hero">
       <div class="hero-bg" aria-hidden="true"></div>
@@ -621,7 +618,7 @@ body::after{
         <p class="hero-sub">小料理と酒 Japanese eatery & BAR 日本家庭料理 & BAR</p>
 
         <div class="hero-actions">
-        <a class="btn" href="#menu">查看菜單</a>
+          <a class="btn" href="#menu">查看菜單</a>
         </div>
 
         <div class="hours">
@@ -674,7 +671,7 @@ body::after{
                   <div class="menu-price">NT$ 300</div>
                   <div class="menu-desc">濃郁明太子香氣，奶油收尾更順口。</div>
                 </div>
-                  <div class="menu-row">
+                <div class="menu-row">
                   <div class="menu-name">蒜頭辣椒義大利麵</div>
                   <div class="leader"></div>
                   <div class="menu-price">NT$ 250</div>
@@ -692,19 +689,18 @@ body::after{
                   <div class="menu-price">NT$ 250</div>
                   <div class="menu-desc">軟綿綿入口即化的玉子燒，下酒好夥伴!</div>
                 </div>
-                  <div class="menu-row">
+                <div class="menu-row">
                   <div class="menu-name">招牌唐揚雞</div>
                   <div class="leader"></div>
                   <div class="menu-price">NT$ 250</div>
                   <div class="menu-desc">經典日式唐揚雞，只在這邊吃得到!</div>
                 </div>
-                  <div class="menu-row">
+                <div class="menu-row">
                   <div class="menu-name">蛋餅皮披薩</div>
                   <div class="leader"></div>
                   <div class="menu-price">NT$ 200</div>
                   <div class="menu-desc">台式蛋餅皮+披薩口味的特別組合，清爽無負擔。</div>
                 </div>
-
               </div>
             </details>
 
@@ -717,21 +713,21 @@ body::after{
                 <i class="chev"></i>
               </summary>
               <div class="menu-items">
-                  <div class="menu-row">
+                <div class="menu-row">
                   <div class="menu-name">生啤酒</div>
                   <div class="leader"></div>
                   <div class="menu-price">NT$ 200</div>
                   <div class="menu-desc">經典清爽生啤酒。</div>
                 </div>
 
-                  <div class="menu-row">
+                <div class="menu-row">
                   <div class="menu-name">健力士</div>
                   <div class="leader"></div>
                   <div class="menu-price">NT$ 250</div>
                   <div class="menu-desc">經典黑麥啤酒，喝了不礙胃。</div>
                 </div>
-  
-                  <div class="menu-row">
+
+                <div class="menu-row">
                   <div class="menu-name">瓶裝啤酒</div>
                   <div class="leader"></div>
                   <div class="menu-price">ASK</div>
@@ -749,13 +745,13 @@ body::after{
                   <div class="leader"></div>
                   <div class="menu-price">NT$ 150</div>
                   <div class="menu-desc">使用日本經典燒酌調製。</div>
-                </div><div class="menu-row">
+                </div>
+                <div class="menu-row">
                   <div class="menu-name">琴酒</div>
                   <div class="leader"></div>
                   <div class="menu-price">NT$ 150</div>
                   <div class="menu-desc">帶有杜松子香味的琴酒，與tonic氣泡的清爽組合，下酒菜必備!</div>
                 </div>
-
               </div>
             </details>
 
@@ -773,47 +769,47 @@ body::after{
                   <div class="leader"></div>
                   <div class="menu-price">NT$ 100</div>
                 </div>
-                  <div class="menu-row">
+                <div class="menu-row">
                   <div class="menu-name">麥茶</div>
                   <div class="leader"></div>
                   <div class="menu-price">NT$ 100</div>
                 </div>
-                  <div class="menu-row">
+                <div class="menu-row">
                   <div class="menu-name">綠茶</div>
                   <div class="leader"></div>
                   <div class="menu-price">NT$ 100</div>
                 </div>
-                  <div class="menu-row">
+                <div class="menu-row">
                   <div class="menu-name">可爾必思</div>
                   <div class="leader"></div>
                   <div class="menu-price">NT$ 100</div>
                 </div>
-                  <div class="menu-row">
+                <div class="menu-row">
                   <div class="menu-name">可樂</div>
                   <div class="leader"></div>
                   <div class="menu-price">NT$ 100</div>
                 </div>
-                  <div class="menu-row">
+                <div class="menu-row">
                   <div class="menu-name">雪碧</div>
                   <div class="leader"></div>
                   <div class="menu-price">NT$ 100</div>
                 </div>
-                  <div class="menu-row">
+                <div class="menu-row">
                   <div class="menu-name">番茄汁</div>
                   <div class="leader"></div>
                   <div class="menu-price">NT$ 100</div>
                 </div>
-                  <div class="menu-row">
+                <div class="menu-row">
                   <div class="menu-name">桃子汁</div>
                   <div class="leader"></div>
                   <div class="menu-price">NT$ 100</div>
                 </div>
-                  <div class="menu-row">
+                <div class="menu-row">
                   <div class="menu-name">石榴汁</div>
                   <div class="leader"></div>
                   <div class="menu-price">NT$ 100</div>
                 </div>
-                  <div class="menu-row">
+                <div class="menu-row">
                   <div class="menu-name">蘋果汁</div>
                   <div class="leader"></div>
                   <div class="menu-price">NT$ 100</div>
@@ -1003,14 +999,13 @@ body::after{
   </script>
 
   <script>
-  const header = document.querySelector("header");
-  const onScroll = () => header.classList.toggle("is-scrolled", window.scrollY > 10);
-  window.addEventListener("scroll", onScroll, { passive:true });
-  onScroll();
-</script>
+    // header scroll 變深
+    const header = document.querySelector("header");
+    const onScroll = () => header.classList.toggle("is-scrolled", window.scrollY > 10);
+    window.addEventListener("scroll", onScroll, { passive:true });
+    onScroll();
+  </script>
 
 </body>
 </html>
-
-
-
+```
