@@ -1,0 +1,973 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>水星俱樂部｜小料理&酒</title>
+
+  <!-- 字體 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg:#070707;
+      --panel:#0f0f10;
+      --text:#eceae6;
+      --muted: rgba(236,234,230,.72);
+      --gold:#d6b36a;
+      --gold2:#b9964f;
+      --line: rgba(214,179,106,.28);
+      --shadow: 0 24px 60px rgba(0,0,0,.58);
+      --radius: 22px;
+      --max: 1120px;
+
+      /* cursor */
+      --cursor-ring: 34px;
+      --cursor-dot: 6px;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      background: radial-gradient(1200px 700px at 50% -10%, rgba(214,179,106,.12), transparent 55%),
+                  radial-gradient(900px 500px at 90% 20%, rgba(214,179,106,.08), transparent 60%),
+                  var(--bg);
+      color:var(--text);
+      font-family:"Noto Sans TC", system-ui, -apple-system, "Segoe UI", sans-serif;
+      overflow-x:hidden;
+      cursor:none; /* 客製游標 */
+    }
+    a,button,input,select,textarea{cursor:none}
+    a{color:inherit; text-decoration:none}
+    .container{max-width:var(--max); margin:0 auto; padding:0 24px}
+
+    /* 粒子 */
+    .grain::before{
+      content:"";
+      position:fixed; inset:0;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.12'/%3E%3C/svg%3E");
+      mix-blend-mode:overlay;
+      pointer-events:none;
+      opacity:.16;
+      z-index:2;
+    }
+
+    /* ---------- NAV ---------- */
+    header{
+      position:fixed; left:0; right:0; top:0;
+      z-index:60;
+      background: linear-gradient(to bottom, rgba(0,0,0,.68), rgba(0,0,0,0));
+      backdrop-filter: blur(6px);
+    }
+    .nav{
+      display:flex; align-items:center; justify-content:space-between;
+      padding:18px 0;
+    }
+    .brand{display:flex; align-items:center; gap:12px; letter-spacing:.12em; text-transform:uppercase;}
+    .logo{
+      width:38px; height:38px; border-radius:999px;
+      border:1px solid var(--line);
+      display:grid; place-items:center;
+      color:var(--gold);
+      font-family:"Cormorant Garamond", serif;
+      font-weight:700;
+    }
+    .brand small{display:block; font-size:12px; color:var(--muted); letter-spacing:.18em;}
+    .brand strong{display:block; font-size:14px; font-weight:600;}
+
+    .nav-links{display:flex; align-items:center; gap:14px;}
+    .nav-links a{
+      font-size:13px; color:var(--muted);
+      padding:10px 12px; border-radius:999px;
+      transition:.2s ease;
+      border:1px solid transparent;
+    }
+    .nav-links a:hover{
+      color:var(--text);
+      border-color:rgba(255,255,255,.10);
+      background: rgba(255,255,255,.04);
+    }
+
+    .btn{
+      display:inline-flex; align-items:center; justify-content:center;
+      gap:8px;
+      padding:10px 16px;
+      border-radius:999px;
+      border:1px solid rgba(214,179,106,.45);
+      background: rgba(214,179,106,.10);
+      color:var(--text);
+      font-size:13px;
+      transition:.2s ease;
+      white-space:nowrap;
+      user-select:none;
+    }
+    .btn:hover{transform:translateY(-1px); background: rgba(214,179,106,.16)}
+    .btn.primary{
+      background: linear-gradient(180deg, rgba(214,179,106,.38), rgba(214,179,106,.14));
+      border-color: rgba(214,179,106,.70);
+      color:#1b160b;
+      font-weight:800;
+    }
+    .btn.primary span{color:#1b160b}
+
+    /* ---------- HERO ---------- */
+    .hero{
+      position:relative;
+      min-height: 92vh;
+      display:grid;
+      align-items:end;
+      padding: 110px 0 70px;
+      overflow:hidden;
+    }
+
+    /* 店家照：用 CSS 變數塞 */
+    .hero-bg{
+      position:absolute; inset:0;
+      background:
+        /* 暗角 */
+        radial-gradient(1000px 720px at 55% 26%, rgba(0,0,0,.10), rgba(0,0,0,.62) 56%, rgba(0,0,0,.92) 100%),
+        /* 黃金光暈（保留） */
+        radial-gradient(700px 520px at 58% 26%, rgba(214,179,106,.28), rgba(214,179,106,0) 60%),
+        /* 黃黑氛圍暖光 */
+        radial-gradient(520px 340px at 74% 18%, rgba(214,179,106,.20), rgba(214,179,106,0) 62%),
+        /* 你的照片 */
+        var(--hero-image);
+      background-size:cover;
+      background-position:center;
+      filter:saturate(1.06) contrast(1.06);
+      transform:scale(1.02);
+      z-index:0;
+    }
+
+    .hero::after{
+      content:"";
+      position:absolute; left:0; right:0; bottom:0; height:160px;
+      background: linear-gradient(to bottom, rgba(0,0,0,0), rgba(0,0,0,.94));
+      pointer-events:none;
+      z-index:1;
+    }
+
+    .hero-inner{position:relative; z-index:3}
+
+    /* 更像參考圖：上小斜體、下大字 */
+    .kicker{
+      font-family:"Cormorant Garamond", serif;
+      color: rgba(236,234,230,.88);
+      letter-spacing:.14em;
+      font-style:italic;
+      font-size:18px;
+      margin:0 0 10px;
+      text-align:center;
+      text-shadow: 0 12px 30px rgba(0,0,0,.55);
+    }
+    .hero-title{
+      font-family:"Cormorant Garamond", serif;
+      font-size: clamp(46px, 6.2vw, 86px);
+      margin:0;
+      text-align:center;
+      letter-spacing:.04em;
+      color:var(--gold);
+      text-shadow: 0 18px 46px rgba(0,0,0,.60);
+    }
+    .hero-sub{
+      margin: 14px auto 0;
+      max-width: 760px;
+      text-align:center;
+      color: var(--muted);
+      line-height:1.95;
+      font-size:14.5px;
+      text-shadow: 0 10px 26px rgba(0,0,0,.55);
+    }
+
+    .hero-actions{
+      display:flex; gap:12px; justify-content:center;
+      margin-top:22px;
+      flex-wrap:wrap;
+    }
+
+    /* 工作時間 */
+    .hours{
+      margin-top:34px;
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:10px;
+      justify-items:center;
+    }
+    .hours h3{
+      margin:0;
+      font-family:"Cormorant Garamond", serif;
+      font-style:italic;
+      color:rgba(236,234,230,.92);
+      letter-spacing:.10em;
+      font-weight:500;
+    }
+    .hours-grid{
+      width:min(860px, 100%);
+      display:grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap:10px;
+      padding:14px;
+      border-radius: 18px;
+      border:1px solid rgba(214,179,106,.22);
+      background: rgba(0,0,0,.30);
+      backdrop-filter: blur(7px);
+    }
+    .day{
+      text-align:center;
+      padding:10px 8px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.06);
+      background: rgba(255,255,255,.03);
+    }
+    .day b{
+      display:block;
+      font-size:12px;
+      color:rgba(236,234,230,.88);
+      margin-bottom:6px;
+      letter-spacing:.10em;
+      font-weight:700;
+    }
+    .day span{font-size:12px; color:var(--muted); letter-spacing:.04em;}
+    .hours-note{font-size:12px; color:rgba(236,234,230,.55); letter-spacing:.04em; text-align:center;}
+
+    /* ---------- SECTION ---------- */
+    section{padding: 86px 0; position:relative; z-index:4;}
+    .section-head{
+      display:flex; align-items:flex-end; justify-content:space-between;
+      gap:20px; margin-bottom:26px;
+    }
+    .section-head .eyebrow{
+      font-family:"Cormorant Garamond", serif;
+      font-style:italic;
+      color:rgba(236,234,230,.88);
+      letter-spacing:.14em;
+      margin:0 0 8px;
+      font-size:18px;
+    }
+    .section-head h2{
+      margin:0;
+      font-family:"Cormorant Garamond", serif;
+      font-size: clamp(34px, 4.2vw, 56px);
+      color:var(--gold);
+      letter-spacing:.03em;
+    }
+    .section-head p{
+      margin:10px 0 0;
+      color:var(--muted);
+      line-height:1.9;
+      max-width:560px;
+      font-size:14.5px;
+    }
+
+    .grid-2{
+      display:grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap:40px;
+      align-items:start;
+    }
+
+    .card{
+      border-radius: var(--radius);
+      border:1px solid rgba(214,179,106,.20);
+      background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.015));
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      position:relative;
+    }
+
+    /* ---------- MENU：收合 + 點點線 ---------- */
+    .menu-actions{display:flex; gap:12px; flex-wrap:wrap; margin-top:18px}
+
+    details.menu-group{
+      border:1px solid rgba(255,255,255,.06);
+      background: rgba(0,0,0,.26);
+      border-radius: 18px;
+      overflow:hidden;
+    }
+    details.menu-group + details.menu-group{margin-top:12px}
+    details.menu-group summary{
+      list-style:none;
+      cursor:none;
+      padding:14px 16px;
+      display:flex; align-items:center; justify-content:space-between;
+      gap:14px;
+      user-select:none;
+    }
+    details.menu-group summary::-webkit-details-marker{display:none}
+    .group-title{
+      display:flex; align-items:baseline; gap:10px; flex-wrap:wrap;
+    }
+    .group-title b{
+      font-size:14px;
+      letter-spacing:.10em;
+      color:rgba(236,234,230,.92);
+      text-transform:uppercase;
+    }
+    .group-title small{
+      color:rgba(236,234,230,.55);
+      font-size:12px;
+      letter-spacing:.06em;
+    }
+    .chev{
+      width:10px; height:10px;
+      border:2px solid rgba(214,179,106,.70);
+      border-left:0; border-top:0;
+      transform: rotate(45deg);
+      transition:.18s ease;
+      opacity:.9;
+      margin-right:4px;
+    }
+    details[open] .chev{transform: rotate(225deg); margin-top:4px}
+
+    .menu-items{padding: 0 14px 14px}
+    .menu-row{
+      display:grid;
+      grid-template-columns: auto 1fr auto;
+      gap:12px;
+      align-items:baseline;
+      padding:12px 6px;
+      border-top: 1px solid rgba(255,255,255,.05);
+    }
+    .menu-row:first-child{border-top:0}
+    .menu-name{
+      font-size:14px;
+      letter-spacing:.04em;
+      color:rgba(236,234,230,.92);
+    }
+    .leader{
+      border-bottom: 1px dotted rgba(214,179,106,.35);
+      transform: translateY(-2px);
+      opacity:.9;
+    }
+    .menu-price{
+      font-family:"Cormorant Garamond", serif;
+      color:var(--gold);
+      font-size:18px;
+      letter-spacing:.03em;
+      white-space:nowrap;
+    }
+    .menu-desc{
+      grid-column: 1 / -1;
+      color: rgba(236,234,230,.62);
+      font-size:12.5px;
+      line-height:1.7;
+      margin-top:-2px;
+      padding-left: 0;
+    }
+
+    /* ---------- PHOTO CAROUSEL（更明顯金色圓環/微光） ---------- */
+    .photo-wrap{padding:22px;}
+    .photo-frame{
+      position:relative;
+      border-radius: 18px;
+      overflow:hidden;
+      border:1px solid rgba(214,179,106,.24);
+      background: rgba(0,0,0,.35);
+      aspect-ratio: 4/5;
+      min-height: 420px;
+      box-shadow: 0 18px 50px rgba(0,0,0,.62);
+    }
+    .photo-frame::before{
+      content:"";
+      position:absolute; inset:-40px;
+      background: radial-gradient(circle at 60% 35%, rgba(214,179,106,.28), transparent 58%);
+      filter: blur(10px);
+      z-index:1;
+      pointer-events:none;
+    }
+    .photo-frame img{
+      position:relative;
+      z-index:0;
+      width:100%; height:100%;
+      object-fit:cover;
+      display:block;
+      transform:scale(1.03);
+      filter: contrast(1.06) saturate(1.05);
+    }
+    .ring{
+      position:absolute;
+      inset: 18px;
+      border-radius: 22px;
+      border:1px solid rgba(214,179,106,.28);
+      pointer-events:none;
+      z-index:2;
+    }
+    .ring::before{
+      content:"";
+      position:absolute; inset:-18px;
+      border-radius: 28px;
+      border:1px solid rgba(214,179,106,.16);
+    }
+    .ring::after{
+      content:"";
+      position:absolute; inset:-34px;
+      border-radius: 36px;
+      border:1px solid rgba(214,179,106,.10);
+      filter: blur(.2px);
+    }
+
+    .carousel-controls{
+      display:flex; align-items:center; justify-content:space-between;
+      gap:12px; margin-top:14px;
+    }
+    .dots{display:flex; gap:8px; align-items:center}
+    .dot{
+      width:8px; height:8px; border-radius:999px;
+      border:1px solid rgba(214,179,106,.58);
+      background: transparent;
+      opacity:.7;
+      transition:.15s ease;
+    }
+    .dot.active{background: rgba(214,179,106,.88); opacity:1; transform:scale(1.08)}
+    .arrows{display:flex; gap:10px}
+    .icon-btn{
+      width:40px; height:40px; border-radius:999px;
+      border:1px solid rgba(214,179,106,.36);
+      background: rgba(214,179,106,.08);
+      color:rgba(236,234,230,.92);
+      transition:.2s ease;
+      user-select:none;
+    }
+    .icon-btn:hover{transform:translateY(-1px); background: rgba(214,179,106,.14)}
+    .icon-btn:active{transform:translateY(0)}
+    .icon{
+      width:16px; height:16px; display:inline-block;
+      border:2px solid currentColor;
+      border-left:0; border-top:0;
+      transform: rotate(-45deg);
+      margin-left:2px;
+    }
+    .icon.prev{transform: rotate(135deg); margin-left:0; margin-right:2px}
+
+    /* ---------- PHOTOS GRID ---------- */
+    .grid12{
+      display:grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap:14px;
+    }
+    .grid12 a.card img{width:100%;height:100%;object-fit:cover;display:block}
+
+    /* ---------- CTA ---------- */
+    .cta{padding: 74px 0 96px}
+    .cta-card{padding: 44px 28px; text-align:center; position:relative;}
+    .cta-card h3{
+      margin:0;
+      font-family:"Cormorant Garamond", serif;
+      font-size: clamp(28px, 3.2vw, 46px);
+      color: var(--gold);
+      letter-spacing:.03em;
+    }
+    .cta-card p{
+      margin:14px auto 0;
+      max-width: 720px;
+      color: var(--muted);
+      line-height:1.9;
+      font-size:14.5px;
+    }
+    .cta-info{
+      display:flex; justify-content:center; gap:18px;
+      flex-wrap:wrap;
+      margin-top:18px;
+      color: rgba(236,234,230,.72);
+      font-size:13px;
+    }
+    .pill{
+      padding:10px 14px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.08);
+      background: rgba(0,0,0,.25);
+    }
+
+    footer{
+      padding: 30px 0 46px;
+      border-top: 1px solid rgba(255,255,255,.06);
+      color: rgba(236,234,230,.55);
+      font-size:12px;
+    }
+    .footer-row{
+      display:flex; align-items:center; justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+
+    /* ---------- CUSTOM CURSOR ---------- */
+    .cursor{
+      position:fixed;
+      left:0; top:0;
+      width:var(--cursor-ring);
+      height:var(--cursor-ring);
+      border-radius:999px;
+      border:1px solid rgba(214,179,106,.62);
+      box-shadow: 0 0 0 1px rgba(0,0,0,.35) inset;
+      pointer-events:none;
+      transform: translate(-999px,-999px);
+      z-index:9999;
+      transition: width .14s ease, height .14s ease, border-color .14s ease, opacity .14s ease, transform .06s linear;
+      opacity:.95;
+      backdrop-filter: blur(2px);
+    }
+    .cursor::after{
+      content:"";
+      position:absolute;
+      left:50%; top:50%;
+      width:var(--cursor-dot);
+      height:var(--cursor-dot);
+      border-radius:999px;
+      background: rgba(214,179,106,.92);
+      transform: translate(-50%,-50%);
+      box-shadow: 0 0 18px rgba(214,179,106,.35);
+    }
+    .cursor.is-hover{
+      width:44px; height:44px;
+      border-color: rgba(214,179,106,.92);
+      opacity:1;
+    }
+    .cursor.is-down{
+      width:30px; height:30px;
+      opacity:.9;
+    }
+
+    /* ---------- RWD ---------- */
+    @media (max-width: 980px){
+      .grid-2{grid-template-columns:1fr; gap:18px}
+      .hours-grid{grid-template-columns: repeat(3, 1fr)}
+      .photo-frame{min-height: 360px; aspect-ratio: 16/10}
+      .section-head{flex-direction:column; align-items:flex-start}
+      body{cursor:auto}
+      a,button,input,select,textarea{cursor:auto}
+      .cursor{display:none}
+    }
+    @media (max-width: 560px){
+      .nav-links{display:none}
+      .hours-grid{grid-template-columns: repeat(2, 1fr)}
+      .hero{padding: 96px 0 56px}
+    }
+  </style>
+</head>
+
+<body class="grain">
+  <!-- custom cursor -->
+  <div class="cursor" id="cursor" aria-hidden="true"></div>
+
+  <header>
+    <div class="container">
+      <div class="nav">
+        <a class="brand" href="#top" aria-label="水星俱樂部">
+          <div class="logo">SUISEI</div>
+          <div>
+            <small></small>
+            <strong></strong>
+          </div>
+        </a>
+
+        <nav class="nav-links" aria-label="主選單">
+          <a href="#menu">菜單</a>
+          <a href="#photos">料理照片</a>
+          <a href="#reserve">店家資訊</a>
+        </nav>
+
+        <div style="display:flex;gap:10px;align-items:center">
+          <a class="btn" href="#menu">查看菜單</a>
+          <a class="btn primary" href="#reserve"><span>店家資訊</span></a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main id="top">
+    <!-- HERO -->
+    <section class="hero" id="hero">
+      <div class="hero-bg" aria-hidden="true"></div>
+
+      <div class="container hero-inner">
+        <p class="kicker">Intimate dining & drinks</p>
+        <h1 class="hero-title">水星俱樂部</h1>
+        <p class="hero-sub">小料理と酒 Japanese eatery & BAR 日本家庭料理 & BAR</p>
+
+        <div class="hero-actions">
+        <a class="btn" href="#menu">查看菜單</a>
+        </div>
+
+        <div class="hours">
+          <h3>Working hours</h3>
+          <div class="hours-grid">
+            <div class="day"><b>Sun</b><span>休息</span></div>
+            <div class="day"><b>Mon</b><span>18:00 - 03:00</span></div>
+            <div class="day"><b>Tue</b><span>18:00 - 03:00</span></div>
+            <div class="day"><b>Wed</b><span>18:00 - 03:00</span></div>
+            <div class="day"><b>Thu</b><span>18:00 - 03:00</span></div>
+            <div class="day"><b>Fri</b><span>18:00 - 05:00</span></div>
+            <div class="day"><b>Sat</b><span>18:00 - 05:00</span></div>
+          </div>
+          <div class="hours-note">※ 低消一杯飲料。</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MENU -->
+    <section id="menu">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Taste the mood</p>
+            <h2>Our Menu</h2>
+            <p>採用當天有的食材製作。</p>
+
+            <div class="menu-actions">
+              <a class="btn" href="menu.pdf" target="_blank" rel="noopener">開啟菜單 PDF</a>
+              <a class="btn primary" href="#reserve"><span>店家資訊</span></a>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <!-- 左：菜單 -->
+          <div class="card" style="padding:18px">
+            <!-- 小料理 -->
+            <details class="menu-group" open>
+              <summary>
+                <div class="group-title">
+                  <b>小料理</b><small>Small Plates</small>
+                </div>
+                <i class="chev"></i>
+              </summary>
+              <div class="menu-items">
+                <div class="menu-row">
+                  <div class="menu-name">鮮奶油義大利麵</div>
+                  <div class="leader"></div>
+                  <div class="menu-price">NT$ 300</div>
+                  <div class="menu-desc">濃郁明太子香氣，奶油收尾更順口。</div>
+                </div>
+                  <div class="menu-row">
+                  <div class="menu-name">蒜頭辣椒義大利麵</div>
+                  <div class="leader"></div>
+                  <div class="menu-price">NT$ 250</div>
+                  <div class="menu-desc">香蒜與辣椒的刺激辛香味，強烈撞擊味蕾。</div>
+                </div>
+                <div class="menu-row">
+                  <div class="menu-name">蔥鮪魚</div>
+                  <div class="leader"></div>
+                  <div class="menu-price">NT$ 300</div>
+                  <div class="menu-desc">生鮪魚與蔥末的融合，加上醬油與芥末搭配的美味。</div>
+                </div>
+                <div class="menu-row">
+                  <div class="menu-name">招牌玉子燒</div>
+                  <div class="leader"></div>
+                  <div class="menu-price">NT$ 250</div>
+                  <div class="menu-desc">軟綿綿入口即化的玉子燒，下酒好夥伴!</div>
+                </div>
+                  <div class="menu-row">
+                  <div class="menu-name">招牌唐揚雞</div>
+                  <div class="leader"></div>
+                  <div class="menu-price">NT$ 250</div>
+                  <div class="menu-desc">經典日式唐揚雞，只在這邊吃得到!</div>
+                </div>
+                  <div class="menu-row">
+                  <div class="menu-name">蛋餅皮披薩</div>
+                  <div class="leader"></div>
+                  <div class="menu-price">NT$ 200</div>
+                  <div class="menu-desc">台式蛋餅皮+披薩口味的特別組合，清爽無負擔。</div>
+                </div>
+
+              </div>
+            </details>
+
+            <!-- 酒 -->
+            <details class="menu-group">
+              <summary>
+                <div class="group-title">
+                  <b>酒單</b><small>Drinks</small>
+                </div>
+                <i class="chev"></i>
+              </summary>
+              <div class="menu-items">
+                  <div class="menu-row">
+                  <div class="menu-name">生啤酒</div>
+                  <div class="leader"></div>
+                  <div class="menu-price">NT$ 200</div>
+                  <div class="menu-desc">經典清爽生啤酒。</div>
+                </div>
+
+                  <div class="menu-row">
+                  <div class="menu-name">健力士</div>
+                  <div class="leader"></div>
+                  <div class="menu-price">NT$ 250</div>
+                  <div class="menu-desc">經典黑麥啤酒，喝了不礙胃。</div>
+                </div>
+  
+                  <div class="menu-row">
+                  <div class="menu-name">瓶裝啤酒</div>
+                  <div class="leader"></div>
+                  <div class="menu-price">ASK</div>
+                  <div class="menu-desc">價錢請洽吧檯人員。</div>
+                </div>
+
+                <div class="menu-row">
+                  <div class="menu-name">水星 嗨ball</div>
+                  <div class="leader"></div>
+                  <div class="menu-price">NT$ 150</div>
+                  <div class="menu-desc">清爽氣泡＋日本威士忌（可改成其他威士忌，價格另洽）。</div>
+                </div>
+                <div class="menu-row">
+                  <div class="menu-name">燒酌嗨</div>
+                  <div class="leader"></div>
+                  <div class="menu-price">NT$ 150</div>
+                  <div class="menu-desc">使用日本經典燒酌調製。</div>
+                </div><div class="menu-row">
+                  <div class="menu-name">琴酒</div>
+                  <div class="leader"></div>
+                  <div class="menu-price">NT$ 150</div>
+                  <div class="menu-desc">帶有杜松子香味的琴酒，與tonic氣泡的清爽組合，下酒菜必備!</div>
+                </div>
+
+              </div>
+            </details>
+
+            <!-- 無酒精區 -->
+            <details class="menu-group">
+              <summary>
+                <div class="group-title">
+                  <b>無酒精飲料</b><small>Soft Drink</small>
+                </div>
+                <i class="chev"></i>
+              </summary>
+              <div class="menu-items">
+                <div class="menu-row">
+                  <div class="menu-name">烏龍茶</div>
+                  <div class="leader"></div>
+                  <div class="menu-price">NT$ 100</div>
+                </div>
+                  <div class="menu-row">
+                  <div class="menu-name">麥茶</div>
+                  <div class="leader"></div>
+                  <div class="menu-price">NT$ 100</div>
+                </div>
+                  <div class="menu-row">
+                  <div class="menu-name">綠茶</div>
+                  <div class="leader"></div>
+                  <div class="menu-price">NT$ 100</div>
+                </div>
+                  <div class="menu-row">
+                  <div class="menu-name">可爾必思</div>
+                  <div class="leader"></div>
+                  <div class="menu-price">NT$ 100</div>
+                </div>
+                  <div class="menu-row">
+                  <div class="menu-name">可樂</div>
+                  <div class="leader"></div>
+                  <div class="menu-price">NT$ 100</div>
+                </div>
+                  <div class="menu-row">
+                  <div class="menu-name">雪碧</div>
+                  <div class="leader"></div>
+                  <div class="menu-price">NT$ 100</div>
+                </div>
+                  <div class="menu-row">
+                  <div class="menu-name">番茄汁</div>
+                  <div class="leader"></div>
+                  <div class="menu-price">NT$ 100</div>
+                </div>
+                  <div class="menu-row">
+                  <div class="menu-name">桃子汁</div>
+                  <div class="leader"></div>
+                  <div class="menu-price">NT$ 100</div>
+                </div>
+                  <div class="menu-row">
+                  <div class="menu-name">石榴汁</div>
+                  <div class="leader"></div>
+                  <div class="menu-price">NT$ 100</div>
+                </div>
+                  <div class="menu-row">
+                  <div class="menu-name">蘋果汁</div>
+                  <div class="leader"></div>
+                  <div class="menu-price">NT$ 100</div>
+                </div>
+              </div>
+            </details>
+          </div>
+
+          <!-- 右：料理輪播 -->
+          <div class="card photo-wrap">
+            <div class="photo-frame">
+              <img id="menuPhoto" src="https://lh3.googleusercontent.com/gps-cs-s/AHVAweojP3zfsg2JRCCpXWuia4FwyqInAefgRSXkBIBBaIGH7IQ35abt0SL9XGQiFMXwGVgbBMVUZR8KIVGVXQYLsGnKIGW4VFu14Ndv1rkCkOdbyDhPiwVatCUeIvTAQknXQXQ0y8ny=s1360-w1360-h1020-rw" alt="料理照片" />
+              <div class="ring" aria-hidden="true"></div>
+            </div>
+
+            <div class="carousel-controls">
+              <div class="dots" id="dots"></div>
+              <div class="arrows">
+                <button class="icon-btn" id="prev" aria-label="上一張"><span class="icon prev"></span></button>
+                <button class="icon-btn" id="next" aria-label="下一張"><span class="icon"></span></button>
+              </div>
+            </div>
+
+            <div style="margin-top:10px;color:rgba(236,234,230,.55);font-size:12px;line-height:1.7">
+              把右側輪播照片換成你的料理照：<b>DISH_PHOTOS</b> 陣列直接改檔名即可。
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PHOTOS -->
+    <section id="photos">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Chef’s selection</p>
+            <h2>料理照片</h2>
+            <p>放你最有代表性的照片（建議 6–12 張）。這區我做成類似參考圖的「大圖＋小圖拼貼」。</p>
+          </div>
+        </div>
+
+        <div class="grid12">
+          <a class="card" style="grid-column: span 5; aspect-ratio: 16/10" href="#"><img src="images/grid-1.jpg" alt="料理照片 1"></a>
+          <a class="card" style="grid-column: span 7; aspect-ratio: 16/10" href="#"><img src="images/grid-2.jpg" alt="料理照片 2"></a>
+          <a class="card" style="grid-column: span 4; aspect-ratio: 1/1" href="#"><img src="images/grid-3.jpg" alt="料理照片 3"></a>
+          <a class="card" style="grid-column: span 4; aspect-ratio: 1/1" href="#"><img src="images/grid-4.jpg" alt="料理照片 4"></a>
+          <a class="card" style="grid-column: span 4; aspect-ratio: 1/1" href="#"><img src="images/grid-5.jpg" alt="料理照片 5"></a>
+        </div>
+      </div>
+    </section>
+
+    <!-- RESERVE -->
+    <section id="reserve" class="cta">
+      <div class="container">
+        <div class="card cta-card">
+          <h3>我們期待今晚與你同桌</h3>
+          <p>可放訂位規則、保留時間、低消、包場/生日/慶祝需求等。</p>
+
+          <div class="cta-info">
+            <div class="pill">📍 地址：台南市（請改）</div>
+            <div class="pill">☎️ 電話：09xx-xxx-xxx</div>
+            <div class="pill">🕯️ 低消：每人 NT$xxx（選填）</div>
+          </div>
+
+          <div class="hero-actions" style="margin-top:22px">
+            <a class="btn primary" href="https://lin.ee/xxxx" target="_blank" rel="noopener"><span>Line 訂位</span></a>
+            <a class="btn" href="tel:+886900000000">撥打電話</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div class="container">
+        <div class="footer-row">
+          <div>© <span id="year"></span> 水星俱樂部 Mercury Club</div>
+          <div style="display:flex;gap:14px;flex-wrap:wrap">
+            <a href="#menu">菜單</a>
+            <a href="#photos">照片</a>
+            <a href="#reserve">店家資訊</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </main>
+
+  <script>
+    // ====== 1) Hero 背景：放你的店家照片（保留金色光暈）======
+    const HERO_IMAGE = "https://lh3.googleusercontent.com/p/AF1QipOu84Y0mrWZD5x7yjtUBbVvJGTdJ06AQpKkGKU=s1360-w1360-h1020-rw"; // ←換成你的店家照片（可用網址）
+    document.documentElement.style.setProperty("--hero-image", `url("${HERO_IMAGE}")`);
+
+    // ===== 年份 =====
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    // ====== 2) 右側料理輪播 ======
+    const DISH_PHOTOS = [
+      "images/dish-1.jpg",
+      "images/dish-2.jpg",
+      "images/dish-3.jpg",
+      "images/dish-4.jpg",
+    ];
+
+    const img = document.getElementById("menuPhoto");
+    const dotsWrap = document.getElementById("dots");
+    const prev = document.getElementById("prev");
+    const next = document.getElementById("next");
+
+    let idx = 0;
+    let timer = null;
+
+    function renderDots(){
+      dotsWrap.innerHTML = "";
+      DISH_PHOTOS.forEach((_, i) => {
+        const b = document.createElement("button");
+        b.className = "dot" + (i === idx ? " active" : "");
+        b.setAttribute("aria-label", `切換到第 ${i+1} 張`);
+        b.addEventListener("click", () => {
+          idx = i;
+          update();
+          restart();
+        });
+        dotsWrap.appendChild(b);
+      });
+    }
+
+    function update(){
+      img.src = DISH_PHOTOS[idx];
+      [...dotsWrap.children].forEach((d, i) => d.classList.toggle("active", i === idx));
+    }
+
+    function go(step){
+      idx = (idx + step + DISH_PHOTOS.length) % DISH_PHOTOS.length;
+      update();
+    }
+
+    function restart(){
+      if(timer) clearInterval(timer);
+      timer = setInterval(() => go(1), 4200);
+    }
+
+    prev.addEventListener("click", () => { go(-1); restart(); });
+    next.addEventListener("click", () => { go(1); restart(); });
+
+    renderDots();
+    update();
+    restart();
+
+    // 如果輪播照片尚未放好：fallback
+    img.addEventListener("error", () => {
+      const frame = document.querySelector(".photo-frame");
+      frame.style.background = "linear-gradient(135deg, rgba(214,179,106,.16), rgba(255,255,255,.03))";
+      frame.style.display = "grid";
+      frame.style.placeItems = "center";
+      frame.style.color = "rgba(236,234,230,.78)";
+      frame.style.fontSize = "13px";
+      frame.innerHTML = "<div style='padding:18px;text-align:center;line-height:1.8'>把右側輪播圖放進 <b>images/</b> 資料夾<br/>或改成你的圖片網址</div><div class='ring' aria-hidden='true'></div>";
+    });
+
+    // ====== 3) 客製圓形游標（外圈+中心點）======
+    const cursor = document.getElementById("cursor");
+    let x = -999, y = -999;
+
+    window.addEventListener("mousemove", (e) => {
+      x = e.clientX; y = e.clientY;
+      cursor.style.transform = `translate(${x - cursor.offsetWidth/2}px, ${y - cursor.offsetHeight/2}px)`;
+    });
+
+    window.addEventListener("mousedown", () => cursor.classList.add("is-down"));
+    window.addEventListener("mouseup",   () => cursor.classList.remove("is-down"));
+
+    const hoverTargets = "a, button, summary, .btn, .icon-btn, .dot";
+    document.addEventListener("mouseover", (e) => {
+      if (e.target.closest(hoverTargets)) cursor.classList.add("is-hover");
+    });
+    document.addEventListener("mouseout", (e) => {
+      if (e.target.closest(hoverTargets)) cursor.classList.remove("is-hover");
+    });
+
+    // 如果使用者按下 Esc 想回原生游標（方便你測）
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        document.body.style.cursor = "auto";
+        document.querySelectorAll("a,button,input,select,textarea,summary").forEach(el => el.style.cursor="auto");
+        cursor.style.display = "none";
+      }
+    });
+  </script>
+</body>
+</html>
